@@ -1,6 +1,6 @@
-youtube_transcript_api==0.4.1
-streamlit==1.37.1 
-google_generativeai==0.1.0
-python-dotenv==0.19.0
-pathlib==1.0.1
-site-packages==59.6.0
+youtube_transcript_api
+streamlit 
+google_generativeai
+python-dotenv
+pathlib
+protobuf
