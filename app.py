@@ -15,28 +15,18 @@ prompt_text = """You are Yotube video summarizer. You will be taking the transcr
 and summarizing the entire video and providing the important summary in points
 within 250 words. Please provide the summary of the text given here:"""
 
-def extract_transcript_details(yt_video_url, lang="hi"):
+def extract_transcript_details(yt_video_url, lang="en"):
     try:
         video_id = yt_video_url.split("=")[1]
-
-        # Attempt to fetch the transcript
-        try:
-            transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=[lang])
-        except TranscriptsDisabled:
-            st.error(f"Error: Subtitles are disabled for the video. Transcript cannot be retrieved. Video ID: {video_id}")
-            return None
-        except VideoUnavailable:
-            st.error(f"Error: Video is unavailable or restricted in your country. Video ID: {video_id}")
-            return None
-        except NoTranscriptFound:
-            st.error(f"Error: No transcript found for the video. Video ID: {video_id}")
-            return None
-        
+        transcript = YouTubeTranscriptApi.get_transcript(video_id)
         transcript_text = ""
         for entry in transcript:
             transcript_text += " " + entry["text"]
         return transcript_text
-
+    
+    except TranscriptsDisabled:
+        st.error(f"Error: Subtitles are disabled for the video. Transcript cannot be retrieved. Video ID: {video_id}")
+        return None
     except Exception as e:
         st.error(f"An error occurred while extracting the transcript: {e}")
         return None
