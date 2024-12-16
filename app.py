@@ -3,10 +3,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 import json
+from pytube import YouTube
 import os
 import google.generativeai as gai
-
-
 from youtube_transcript_api import YouTubeTranscriptApi
 
 gai.configure(api_key=os.getenv('GOOGLE_API_KEY'))
@@ -26,7 +25,7 @@ def extract_transcript_details(yt_video_url, lang="hi"):
         
         transcript = ""
 
-        print(transcript_text)
+        
         
         for i in transcript_text:
             transcript += " " + i["text"]        
@@ -34,6 +33,17 @@ def extract_transcript_details(yt_video_url, lang="hi"):
 
     except Exception as e:
         raise e
+
+
+
+
+def download_audio(youtube_link, output_path="audio.mp3"):
+    yt = YouTube(youtube_link)
+    audio_stream = yt.streams.filter(only_audio=True).first()
+    audio_stream.download(filename=output_path)
+    print(f"Audio downloaded to {output_path}")
+    return output_path
+
 
 
 def generate_gemini_content(transcript_text, prompt_text):
@@ -61,9 +71,7 @@ if youtube_link:
 
 if st.button("Summarize"):
     transcript_text = extract_transcript_details(youtube_link)
-    st.write(transcript_text)
 
     if transcript_text:
         summary = generate_gemini_content(transcript_text, prompt_text)
-        st.markdown("##summary")
         st.write(summary)
