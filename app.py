@@ -1,6 +1,7 @@
 import streamlit as st
 from dotenv import load_dotenv
-
+from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api._errors import TranscriptsDisabled
 load_dotenv()
 import json
 from pytube import YouTube
@@ -19,7 +20,11 @@ def extract_transcript_details(yt_video_url, lang="hi"):
         video_id = yt_video_url.split("=")[1]
 
 
-        transcript_text = YouTubeTranscriptApi.get_transcript(video_id)
+        # transcript_text = YouTubeTranscriptApi.get_transcript(video_id)
+        try:
+            transcript = YouTubeTranscriptApi.get_transcript(video_id)
+        except TranscriptsDisabled as e:
+            print(f"Error: Subtitles are disabled for the video. Transcript cannot be retrieved. Video ID: {e.video_id}")
 
 
         
