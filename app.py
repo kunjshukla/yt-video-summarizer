@@ -19,26 +19,27 @@ def extract_transcript_details(yt_video_url, lang="hi"):
     try:
         video_id = yt_video_url.split("=")[1]
 
-
-        # transcript_text = YouTubeTranscriptApi.get_transcript(video_id)
+        # Attempt to fetch the transcript
         try:
-            transcript = YouTubeTranscriptApi.get_transcript(video_id)
-        except TranscriptsDisabled as e:
-            print(f"Error: Subtitles are disabled for the video. Transcript cannot be retrieved. Video ID: {e.video_id}")
-
-
+            transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=[lang])
+        except TranscriptsDisabled:
+            st.error(f"Error: Subtitles are disabled for the video. Transcript cannot be retrieved. Video ID: {video_id}")
+            return None
+        except VideoUnavailable:
+            st.error(f"Error: Video is unavailable or restricted in your country. Video ID: {video_id}")
+            return None
+        except NoTranscriptFound:
+            st.error(f"Error: No transcript found for the video. Video ID: {video_id}")
+            return None
         
-        transcript = ""
-
-        
-        
-        for i in transcript_text:
-            transcript += " " + i["text"]        
-        return transcript
+        transcript_text = ""
+        for entry in transcript:
+            transcript_text += " " + entry["text"]
+        return transcript_text
 
     except Exception as e:
-        raise e
-
+        st.error(f"An error occurred while extracting the transcript: {e}")
+        return None
 
 
 
@@ -75,8 +76,14 @@ if youtube_link:
     st.image(f"https://img.youtube.com/vi/{video_id}/0.jpg", use_column_width=True)
 
 if st.button("Summarize"):
-    transcript_text = extract_transcript_details(youtube_link)
+    if not youtube_link:
+        st.error("Please enter a valid YouTube video link.")
+    else:
+        transcript_text = extract_transcript_details(youtube_link)
 
-    if transcript_text:
-        summary = generate_gemini_content(transcript_text, prompt_text)
-        st.write(summary)
+        if transcript_text:
+            summary = generate_gemini_content(transcript_text, prompt_text)
+            if summary:
+                st.write(summary)
+            else:
+                st.error("Failed to generate summary.")
