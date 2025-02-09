@@ -1,6 +1,8 @@
-streamlit 
-google_generativeai
+streamlit
 python-dotenv
-pathlib
-protobuf
-pytube
+yt-dlp
+torchaudio
+google-generativeai
+google-api-python-client
+transformers
+torch
