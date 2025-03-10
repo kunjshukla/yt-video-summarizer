@@ -143,7 +143,7 @@ def summarize_transcript(transcript_text):
     if not transcript_text:
         return "No transcript available for summarization."
 
-    model = gai.GenerativeModel("gemini-pro")
+    model = gai.GenerativeModel("gemini-1.5-pro")
     response = model.generate_content(prompt_text + transcript_text)
 
     try:
